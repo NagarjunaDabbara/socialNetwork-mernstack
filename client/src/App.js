@@ -1,31 +1,35 @@
-import React, { Fragment } from 'react';
+import React, { Fragment, useEffect } from 'react';
 import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
-import Navbar from './components/layout/navbar';
-import Landing from './components/layout/landing';
-import Register from './components/auth/register';
-import Login from './components/auth/login';
+import Navbar from './components/layout/Navbar';
+import Landing from './components/layout/Landing';
+import Routes from './components/routing/Routes';
 
+// Redux
+import { Provider } from 'react-redux';
+import store from './store';
+import { loadUser } from './actions/auth';
+import setAuthToken from './utils/setAuthToken';
 
 import './App.css';
 
 const App = () => {
- return (
-   
-  <Router>
-  <Fragment>
-    <Navbar />
-    <Route exact path="/" component={Landing} />
-<section className="container">
-<Switch>
-      <Route path="/register" component={Register} />
-      <Route path="/login" component={Login} />
+  useEffect(() => {
+    setAuthToken(localStorage.token);
+    store.dispatch(loadUser());
+  }, []);
 
-    </Switch>
-</section>
-   
-  </Fragment>
-</Router>
-      
+  return (
+    <Provider store={store}>
+      <Router>
+        <Fragment>
+          <Navbar />
+          <Switch>
+            <Route exact path="/" component={Landing} />
+            <Route component={Routes} />
+          </Switch>
+        </Fragment>
+      </Router>
+    </Provider>
   );
 };
 
